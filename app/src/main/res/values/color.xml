@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <resources>
-    <color name="primary">@color/md_green_500</color>
-    <color name="fab_primary">@color/md_blue_grey_500</color>
-    <color name="fab_pressed">@color/md_blue_grey_300</color>
-    <color name="fab_ripple">@color/md_blue_grey_400</color>
-    <color name="primary_dark">@color/md_green_700</color>
-    <color name="primary_light">@color/md_green_300</color>
-    <color name="accent">@color/md_blue_grey_500</color>
+    <color name="primary">@color/md_blue_grey_500</color>
+    <color name="fab_primary">@color/md_teal_500</color>
+    <color name="fab_pressed">@color/md_teal_300</color>
+    <color name="fab_ripple">@color/md_teal_400</color>
+    <color name="primary_dark">@color/md_blue_grey_700</color>
+    <color name="primary_light">@color/md_blue_grey_300</color>
+    <color name="accent">@color/md_teal_500</color>
     <color name="primary_text">@color/md_white_1000</color>
     <color name="seconday_text">@color/md_black_1000</color>
 </resources>

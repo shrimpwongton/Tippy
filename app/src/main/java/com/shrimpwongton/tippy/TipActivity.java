@@ -10,7 +10,10 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.InputFilter;
 import android.text.InputType;
+import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -25,6 +28,7 @@ import android.widget.Toast;
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
 
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Locale;
 
@@ -32,10 +36,11 @@ import java.util.Locale;
 public class TipActivity extends ActionBarActivity {
 
     Spinner spinnerCountry;
-    TextView textRecommendation;
-    TextView leftCurrency, rightCurrency;
+    TextView textRecommendation, totalText, taxText;
+    TextView leftCurrency, rightCurrency, leftTotalCurrency, rightTotalCurrency;
     EditText billText, tipText;
     DiscreteSeekBar tipBar;
+    DecimalFormat format = new DecimalFormat("##,###.##");
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,7 +82,85 @@ public class TipActivity extends ActionBarActivity {
                 setCurrencySymbol(spinnerCountry.getSelectedItem().toString());
             }
         });
+        billText = (EditText) findViewById(R.id.bill_editText);
+        totalText = (TextView) findViewById(R.id.total_amount_textView);
+        billText.setFilters(new InputFilter[] {new DecimalDigitsInputFilter(2)});
+        taxText = (EditText) findViewById(R.id.tax_editText);
+        taxText.setFilters(new InputFilter[]{new DecimalDigitsInputFilter(3)});
+        billText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                if (!(s.toString().matches("")) && !(taxText.getText().toString().matches(""))) {
+                    String formatted = format.format(Double.parseDouble(taxText.getText().toString()) / 100.0 * Double.parseDouble(s.toString()) + Double.parseDouble(s.toString()));
+                    totalText.setText(formatted);
+                }
+                else if ( !(s.toString().matches("")) ) {
+                    String formatted = format.format(Double.parseDouble(s.toString()));
+                    totalText.setText(formatted);
+                }
+                else {
+                    totalText.setText("0");
+                }
 
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (!(s.toString().matches("")) && !(taxText.getText().toString().matches(""))) {
+                    String formatted = format.format(Double.parseDouble(taxText.getText().toString()) / 100.0 * Double.parseDouble(s.toString()) + Double.parseDouble(s.toString()));
+                    totalText.setText(formatted);
+                }
+                else if ( !(s.toString().matches("")) ) {
+                    String formatted = format.format(Double.parseDouble(s.toString()));
+                    totalText.setText(formatted);
+                }
+                else {
+                    totalText.setText("0");
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (!(s.toString().matches("")) && !(taxText.getText().toString().matches(""))) {
+                    String formatted = format.format(Double.parseDouble(taxText.getText().toString()) / 100.0 * Double.parseDouble(s.toString()) + Double.parseDouble(s.toString()));
+                    totalText.setText(formatted);
+                }
+                else if ( !(s.toString().matches("")) ) {
+                    String formatted = format.format(Double.parseDouble(s.toString()));
+                    totalText.setText(formatted);
+                }
+                else {
+                    totalText.setText("0");
+                }
+            }
+        });
+        taxText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (!(billText.getText().toString().matches("")) && !(s.toString().matches(""))) {
+                    String formatted = format.format(Double.parseDouble(s.toString()) / 100.0 * Double.parseDouble(billText.getText().toString()) + Double.parseDouble(billText.getText().toString()));
+                    totalText.setText(formatted);
+                } else if (!(billText.getText().toString().matches("")))
+                    totalText.setText(billText.getText().toString());
+                else
+                    totalText.setText("0");
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (!(billText.getText().toString().matches("")) && !(s.toString().matches(""))) {
+                    String formatted = format.format(Double.parseDouble(s.toString()) / 100.0 * Double.parseDouble(billText.getText().toString()) + Double.parseDouble(billText.getText().toString()));
+                    totalText.setText(formatted);
+                } else if (!(billText.getText().toString().matches("")))
+                    totalText.setText(billText.getText().toString());
+                else
+                    totalText.setText("0");
+            }
+        });
     }
 
     //private method of your class
@@ -95,7 +178,7 @@ public class TipActivity extends ActionBarActivity {
     }
 
     // Get the user's location, and sets the spinner to his/her location.
-    public void getAndSetLocation () {
+    private void getAndSetLocation () {
         spinnerCountry = (Spinner) findViewById(R.id.country_spinner);
         LocationManager lm = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
         Location location;
@@ -131,52 +214,62 @@ public class TipActivity extends ActionBarActivity {
             e.printStackTrace();
         }
     }
-    public void setLeftCurrency(String currency) {
+    private void setLeftCurrency(String currency) {
+        leftTotalCurrency = (TextView) findViewById(R.id.currency_total_left);
+        rightTotalCurrency = (TextView) findViewById(R.id.currency_total_right);
         leftCurrency = (TextView) findViewById(R.id.currency_symbol_left);
         rightCurrency = (TextView) findViewById(R.id.currency_symbol_right);
         billText = (EditText) findViewById(R.id.bill_editText);
+        leftTotalCurrency.setText(currency);
+        rightTotalCurrency.setText("");
         leftCurrency.setText(currency);
         rightCurrency.setText("");
         billText.setGravity(Gravity.LEFT);
     }
-    public void setRightCurrency(String currency) {
+    private void setRightCurrency(String currency) {
+        leftTotalCurrency = (TextView) findViewById(R.id.currency_total_left);
+        rightTotalCurrency = (TextView) findViewById(R.id.currency_total_right);
         leftCurrency = (TextView) findViewById(R.id.currency_symbol_left);
         rightCurrency = (TextView) findViewById(R.id.currency_symbol_right);
         billText = (EditText) findViewById(R.id.bill_editText);
+        leftTotalCurrency.setText("");
+        rightTotalCurrency.setText(currency);
         leftCurrency.setText("");
         rightCurrency.setText(currency);
         billText.setGravity(Gravity.RIGHT);
     }
-    public void setNonDecimal() {
 
-    }
-
-    public void setDecimal() {
-
-    }
-
-    public void changeKeyboard(int i) {
+    private void changeKeyboard(int i) {
         billText = (EditText) findViewById(R.id.bill_editText);
         if ( i == 0 ) {
-            double val = Double.parseDouble(billText.getText().toString());
-            int intVal = (int) Math.floor(val);
-            billText.setText(Integer.toString(intVal));
+            if ( !billText.getText().toString().matches("") ) {
+                double val = Double.parseDouble(billText.getText().toString());
+                int intVal = (int) Math.floor(val);
+                billText.setText(Integer.toString(intVal));
+                billText.setSelection(billText.getText().length());
+                format = new DecimalFormat("##,###");
+                totalText.setText(format.format((double)((int) Math.floor((Double.parseDouble((totalText.getText().toString()).replace(",","")))))));
+            }
             billText.setInputType(InputType.TYPE_CLASS_NUMBER);
             billText.setHint("0");
         }
         else {
             billText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
-            billText.setHint("0.00");
+            if ( !billText.getText().toString().matches("") )
+                billText.setSelection(billText.getText().length());
+            billText.setHint("0");
+            format = new DecimalFormat("##,###.##");
+            totalText.setText(format.format(Double.parseDouble((totalText.getText().toString()).replace(",",""))));
         }
 
     }
-    public void setTip(int tip) {
+    private void setTip(int tip) {
         tipBar = (DiscreteSeekBar) findViewById(R.id.tip_spinner);
         tipText = (EditText) findViewById(R.id.tip_textView);
         tipBar.setProgress(tip);
         tipText.setText(Integer.toString(tip));
     }
-    public void setCurrencySymbol (String country) {
+    private void setCurrencySymbol (String country) {
         switch (country) {
             case "Brazil":
                 setLeftCurrency("R$");
@@ -193,7 +286,7 @@ public class TipActivity extends ActionBarActivity {
             case "Norway":
             case "Iceland":
                 setRightCurrency("kr");
-                changeKeyboard(1);
+                changeKeyboard(0);
                 break;
             case "Denmark":
                 setRightCurrency("kr.");
@@ -228,10 +321,6 @@ public class TipActivity extends ActionBarActivity {
             case "Switzerland":
             case "Liechtenstein":
                 setRightCurrency("CHF");
-                changeKeyboard(1);
-                break;
-            case "Iran":
-                setRightCurrency("﷼");
                 changeKeyboard(1);
                 break;
             case "Indonesia":
@@ -282,20 +371,12 @@ public class TipActivity extends ActionBarActivity {
                 setLeftCurrency("₽");
                 changeKeyboard(1);
                 break;
-            case "Saudi Arabia":
-                setRightCurrency("﷼");
-                changeKeyboard(1);
-                break;
             case "Singapore":
-                setLeftCurrency("$S");
+                setLeftCurrency("S$");
                 changeKeyboard(1);
                 break;
             case "Hong Kong":
                 setLeftCurrency("HK$");
-                changeKeyboard(1);
-                break;
-            case "South Africa":
-                setLeftCurrency("R");
                 changeKeyboard(1);
                 break;
             case "South Korea":
@@ -314,25 +395,9 @@ public class TipActivity extends ActionBarActivity {
                 setLeftCurrency("\u20BA");
                 changeKeyboard(1);
                 break;
-            case "Ukraine":
-                setLeftCurrency("₴");
-                changeKeyboard(1);
-                break;
-            case "United Arab Emirates":
-                setRightCurrency("AED");
-                changeKeyboard(1);
-                break;
             case "United Kingdom":
                 setLeftCurrency("£");
                 changeKeyboard(1);
-                break;
-            case "Venezuela":
-                setLeftCurrency("Bs.F.");
-                changeKeyboard(1);
-                break;
-            case "Vietnam":
-                setRightCurrency("₫");
-                changeKeyboard(0);
                 break;
             case "Chile":
                 setLeftCurrency("$");
@@ -346,11 +411,10 @@ public class TipActivity extends ActionBarActivity {
     }
 
     // Sets recommendation on tip amount for selected countries.
-    public void determineTip(String country) {
+    private void determineTip(String country) {
         textRecommendation = (TextView) findViewById(R.id.recommendation_text);
         switch (country) {
             case "Argentina":
-            case "Bahamas":
             case "Bahrain":
             case "Bolivia":
             case "Bulgaria":
@@ -360,9 +424,7 @@ public class TipActivity extends ActionBarActivity {
             case "Philippines":
             case "Poland":
             case "Slovakia":
-            case "Ukraine":
-            case "Venezuela":
-                textRecommendation.setText("10% recommended.");
+                textRecommendation.setText("10%");
                 setTip(10);
                 break;
             case "Australia":
@@ -377,7 +439,7 @@ public class TipActivity extends ActionBarActivity {
             case "Switzerland":
             case "Turkey":
             case "Morocco":
-                textRecommendation.setText("Rounding up is recommended.");
+                textRecommendation.setText("Round up");
                 setTip(0);
                 break;
             case "Belgium":
@@ -388,15 +450,12 @@ public class TipActivity extends ActionBarActivity {
             case "Iceland":
             case "India":
             case "Norway":
-            case "South Africa":
             case "Sweden":
-            case "Sri Lanka":
-                textRecommendation.setText("10% recommended, if no service charge added.");
+                textRecommendation.setText("10%, if no service charge added.");
                 setTip(10);
                 break;
             case "Taiwan":
             case "Singapore":
-            case "Trinidad And Tobago":
                 textRecommendation.setText("No tip required, but tips are appreciated.");
                 setTip(0);
                 break;
@@ -404,34 +463,23 @@ public class TipActivity extends ActionBarActivity {
             case "Ireland":
             case "Mexico":
             case "Russia":
-            case "Saudi Arabia":
-            case "Dominican Republic":
-                textRecommendation.setText("10-15% recommended.");
+                textRecommendation.setText("10-15%");
                 setTip(10);
                 break;
-            case "American Samoa":
-            case "Costa Rica":
-            case "Brunei":
             case "Japan":
             case "Denmark":
             case "Fiji":
             case "Malaysia":
             case "New Zealand":
-            case "Soloman Islands":
-            case "Samoa":
             case "South Korea":
             case "Thailand":
-            case "United Arab Emirates":
-            case "Vietnam":
-            case "Kazakhstan":
-            case "Iran":
             case "Slovenia":
                 textRecommendation.setText("No tip required.");
                 setTip(0);
                 break;
             case "Israel":
             case "Portugal":
-                textRecommendation.setText("10 - 15% recommended, if no service charge added.");
+                textRecommendation.setText("10 - 15%, if no service charge added.");
                 setTip(10);
                 break;
             case "China":
@@ -448,29 +496,27 @@ public class TipActivity extends ActionBarActivity {
             case "Netherlands":
             case "Luxembourg":
             case "Liechtenstein":
-                textRecommendation.setText("5 - 10% is recommended.");
+                textRecommendation.setText("5 - 10%");
                 setTip(5);
                 break;
             case "Chile":
             case "Egypt":
             case "Greece":
-            case "Guatemala":
             case "Hong Kong":
             case "Macau":
             case "Italy":
             case "Spain":
             case "Andorra":
-            case "Jamaica":
                 textRecommendation.setText("10% in addition to service charge.");
                 setTip(10);
                 break;
             case "Canada":
-                textRecommendation.setText("15% is recommended.");
+                textRecommendation.setText("15%");
                 setTip(15);
                 break;
             case "United States":
             case "Puerto Rico":
-                textRecommendation.setText("15 - 20% is recommended.");
+                textRecommendation.setText("15 - 20%");
                 setTip(15);
                 break;
             default :
