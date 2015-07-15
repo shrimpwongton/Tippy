@@ -1,0 +1,31 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:summary="Default country, tax, tip."
+        android:title="Defaults" >
+
+        <ListPreference
+            android:key="@string/country_pref"
+            android:title="Country"
+            android:entries="@array/countries_array"
+            android:entryValues="@array/countries_array"/>
+        <EditTextPreference
+            android:key="@string/tax_pref"
+            android:title="Tax Percentage"/>
+        <ListPreference
+            android:key="@string/tip_pref"
+            android:title="Tip Percentage"/>
+        <SwitchPreference
+            android:key="recommendation_pref"
+            android:title="Country Tip Recommendations"
+            android:defaultValue="true"/>
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:summary="Location"
+        android:title="Location" >
+        <SwitchPreference
+            android:key="location_pref"
+            android:title="Location"
+            android:summary="Use location to determine country for tip recommendations"/>
+    </PreferenceCategory>
+</PreferenceScreen>

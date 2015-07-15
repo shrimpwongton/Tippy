@@ -1,6 +1,8 @@
 package com.shrimpwongton.tippy;
 
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -8,6 +10,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.text.Editable;
@@ -42,7 +45,7 @@ public class TipActivity extends ActionBarActivity {
 
     Double calculatedTotal=0.0;
     Spinner spinnerCountry;
-    TextView textRecommendation, totalText, leftCurrency, rightCurrency, leftTotalCurrency, rightTotalCurrency, tipText;
+    TextView textRecommendation, totalText, leftCurrency, rightCurrency, leftTotalCurrency, rightTotalCurrency, tipText, text1, text2, text3;
     EditText billText, taxText;
     DiscreteSeekBar tipBar, splitBar;
     DecimalFormat format = new DecimalFormat("##,##0.00");
@@ -54,6 +57,8 @@ public class TipActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tip);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+
 
         // Gets the address of the user, in order to set country
         // Finish at the end.
@@ -242,6 +247,10 @@ public class TipActivity extends ActionBarActivity {
         view1 = (View) findViewById(R.id.view1);
         view2 = (View) findViewById(R.id.view2);
         view3 = (View) findViewById(R.id.view3);
+        text1 = (TextView) findViewById(R.id.text1);
+        text2 = (TextView) findViewById(R.id.text2);
+        text3 = (TextView) findViewById(R.id.text3);
+        text1.setText(billText.getText().toString());
         double billp = 0.0;
         double taxp = 0.0;
         double tipp = 0.0;
@@ -261,6 +270,9 @@ public class TipActivity extends ActionBarActivity {
         view1.setLayoutParams(params1);
         view2.setLayoutParams(params2);
         view3.setLayoutParams(params3);
+        text1.setLayoutParams(params1);
+        text2.setLayoutParams(params2);
+        text3.setLayoutParams(params3);
     }
     private double round() {
         if ( roundUp.isChecked() )
@@ -653,7 +665,8 @@ public class TipActivity extends ActionBarActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            return true;
+            Intent i = new Intent(this, SettingsActivity.class);
+            startActivityForResult(i, 1);
         }
 
         return super.onOptionsItemSelected(item);

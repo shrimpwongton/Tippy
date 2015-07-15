@@ -53,29 +53,61 @@
         android:layout_below="@id/total_textView"
         android:orientation="horizontal"
         android:layout_marginLeft="16dp"
-        android:gravity="center_vertical">
+        android:gravity="center_vertical"
+        android:id="@+id/total_view">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/currency_total_left"
-            android:textSize="45sp"
+            android:textSize="34sp"
             android:textColor="@color/md_white_1000"
             android:layout_marginRight="4dp"/>
         <TextView
             android:id="@+id/total_amount_textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="45sp"
+            android:textSize="34sp"
             android:textColor="@color/md_white_1000"
             android:text="0"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="4dp"
-            android:textSize="45sp"
+            android:textSize="34sp"
             android:textColor="@color/md_white_1000"
             android:id="@+id/currency_total_right"/>
     </LinearLayout>
+    <LinearLayout
+        android:layout_above="@id/layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="4dp">
+        <TextView
+            android:id="@+id/text1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:textSize="12sp"
+            android:textColor="@color/md_white_1000"/>
+        <TextView
+            android:id="@+id/text2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:textSize="12sp"
+            android:textColor="@color/md_white_1000"/>
+        <TextView
+            android:id="@+id/text3"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:textSize="12sp"
+            android:textColor="@color/md_white_1000"/>
+    </LinearLayout>
+        ">
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
