@@ -16,8 +16,14 @@
             android:key="@string/tip_pref"
             android:title="Tip Percentage"/>
         <SwitchPreference
+            android:key="tipping_pref"
+            android:title="Tipping"
+            android:summary="Tip percentage after tax."
+            />
+        <SwitchPreference
             android:key="recommendation_pref"
-            android:title="Country Tip Recommendations"
+            android:title="Tip Recommendations"
+            android:summary="Show tip recommendations for selected country."
             android:defaultValue="true"/>
     </PreferenceCategory>
     <PreferenceCategory
