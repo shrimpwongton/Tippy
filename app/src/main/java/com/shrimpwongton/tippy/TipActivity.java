@@ -45,6 +45,7 @@ public class TipActivity extends ActionBarActivity {
 
     Double calculatedTotal=0.0;
     Double calculatedTip = 0.0;
+    Double tip = 0.0;
     Spinner spinnerCountry;
     TextView textRecommendation, totalText, leftCurrency, rightCurrency, leftTotalCurrency, rightTotalCurrency, tipText, leftTipCurrency, rightTipCurrency, tipTextView;
     EditText billText, taxText;
@@ -106,9 +107,7 @@ public class TipActivity extends ActionBarActivity {
         });
         billText.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -130,8 +129,7 @@ public class TipActivity extends ActionBarActivity {
             }
 
             @Override
-            public void afterTextChanged(Editable s) {
-            }
+            public void afterTextChanged(Editable s) {}
         });
         taxText.addTextChangedListener(new TextWatcher() {
             @Override
@@ -159,15 +157,6 @@ public class TipActivity extends ActionBarActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                /*if (!(billText.getText().toString().matches("")) && !(s.toString().matches(""))) {
-                    calculatedTotal = Double.parseDouble(s.toString()) / 100.0 * Double.parseDouble(billText.getText().toString()) + Double.parseDouble(billText.getText().toString());
-                    String formatted = format.format(calculatedTotal);
-                    totalText.setText(formatted);
-                } else if (!(billText.getText().toString().matches(""))) {
-                    calculatedTotal = Double.parseDouble(billText.getText().toString());
-                    totalText.setText(billText.getText().toString());
-                } else
-                    totalText.setText("0");*/
             }
         });
         tipBar = (DiscreteSeekBar) findViewById(R.id.tip_spinner);
@@ -205,11 +194,11 @@ public class TipActivity extends ActionBarActivity {
             public void onProgressChanged(DiscreteSeekBar discreteSeekBar, int i, boolean b) {
                 if (!(TextUtils.isEmpty(billText.getText())) && !(TextUtils.isEmpty(taxText.getText()))) {
                     calculatedTotal = ((Double.parseDouble(taxText.getText().toString())+(double)tipBar.getProgress()) / 100.0 * Double.parseDouble(billText.getText().toString()) + Double.parseDouble(billText.getText().toString()))/(double)i;
-                    calculatedTip = (((double) tipBar.getProgress()) / 100.0 * Double.parseDouble(billText.getText().toString()))/(double)i;
+                    calculatedTip = (((double) tipBar.getProgress()) / 100.0 * Double.parseDouble(billText.getText().toString()));
                     roundTotals();
                 } else if (!(TextUtils.isEmpty(billText.getText()))) {
                     calculatedTotal = (Double.parseDouble(billText.getText().toString())+(double)tipBar.getProgress()/100.0*Double.parseDouble(billText.getText().toString()))/(double)i;
-                    calculatedTip = (((double) tipBar.getProgress()) / 100.0 * Double.parseDouble(billText.getText().toString()))/(double)i;
+                    calculatedTip = (((double) tipBar.getProgress()) / 100.0 * Double.parseDouble(billText.getText().toString()));
                     roundTotals();
                 } else {
                     tipTextView.setText(format.format(0));
@@ -232,11 +221,11 @@ public class TipActivity extends ActionBarActivity {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
                     roundDown.setEnabled(false);
-                    roundTotals();
                 } else {
                     roundDown.setEnabled(true);
-                    roundTotals();
                 }
+                roundTotals();
+                setColors();
             }
         });
         roundDown.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -244,18 +233,24 @@ public class TipActivity extends ActionBarActivity {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
                     roundUp.setEnabled(false);
-                    roundTotals();
                 } else {
                     roundUp.setEnabled(true);
-                    roundTotals();
                 }
+                roundTotals();
+                setColors();
             }
         });
     }
 
     private void roundTotals() {
-        totalText.setText(format.format(round(calculatedTotal)));
-        tipTextView.setText(format.format(roundTip(calculatedTip)));
+        if ( splitBar.getProgress() == 1 || (TextUtils.isEmpty(billText.getText()))) {
+            totalText.setText(format.format(round(calculatedTotal)));
+            tipTextView.setText(format.format(roundTip(calculatedTip)));
+        }
+        else {
+            totalText.setText(format.format(round(calculatedTotal*splitBar.getProgress())) + " / " + format.format(round(calculatedTotal*splitBar.getProgress())/splitBar.getProgress()));
+            tipTextView.setText(format.format(roundTipSplit(calculatedTip)));
+        }
     }
     private void setColors() {
         view1 = (View) findViewById(R.id.view1);
@@ -265,11 +260,11 @@ public class TipActivity extends ActionBarActivity {
         double taxp = 0.0;
         double tipp = 0.0;
         if (!(TextUtils.isEmpty(billText.getText()))) {
-            billp = Double.parseDouble(billText.getText().toString())/calculatedTotal;
-            tipp = ((double)tipBar.getProgress()*Double.parseDouble(billText.getText().toString())/100.0)/calculatedTotal;
+            billp = Double.parseDouble(billText.getText().toString())/round(calculatedTotal);
+            tipp = (((double)tipBar.getProgress()*Double.parseDouble(billText.getText().toString())/100.0)+(round(calculatedTotal)-calculatedTotal))/round(calculatedTotal);
         }
         if (!(TextUtils.isEmpty(taxText.getText())) && !(TextUtils.isEmpty(billText.getText()))) {
-            taxp = (Double.parseDouble(taxText.getText().toString())*Double.parseDouble(billText.getText().toString())/100.0)/calculatedTotal;
+            taxp = (Double.parseDouble(taxText.getText().toString())*Double.parseDouble(billText.getText().toString())/100.0)/round(calculatedTotal);
         }
         LinearLayout.LayoutParams params1 = (LinearLayout.LayoutParams) view1.getLayoutParams();
         LinearLayout.LayoutParams params2 = (LinearLayout.LayoutParams) view2.getLayoutParams();
@@ -281,12 +276,26 @@ public class TipActivity extends ActionBarActivity {
         view2.setLayoutParams(params2);
         view3.setLayoutParams(params3);
     }
-
+    private double roundTipSplit(double d) {
+        if ( roundUp.isChecked() )
+            return d + Math.ceil(calculatedTotal*splitBar.getProgress())-calculatedTotal*splitBar.getProgress();
+        else if ( roundDown.isChecked() ) {
+            if (d - (calculatedTotal*splitBar.getProgress() - Math.floor(calculatedTotal*splitBar.getProgress())) < 0)
+                return 0;
+            else
+                return (d - (calculatedTotal*splitBar.getProgress() - Math.floor(calculatedTotal*splitBar.getProgress())));
+        }
+        return d;
+    }
     private double roundTip(double d) {
         if ( roundUp.isChecked() )
             return d + Math.ceil(calculatedTotal)-calculatedTotal;
-        else if ( roundDown.isChecked() )
-            return d - (calculatedTotal-Math.floor(calculatedTotal));
+        else if ( roundDown.isChecked() ) {
+            if (d - (calculatedTotal - Math.floor(calculatedTotal)) < 0)
+                return 0;
+            else
+                return (d - (calculatedTotal - Math.floor(calculatedTotal)));
+        }
         return d;
     }
     private double round(double d) {
@@ -672,6 +681,13 @@ public class TipActivity extends ActionBarActivity {
         }
     }
 
+    private void clear() {
+        billText.setText("");
+        taxText.setText("");
+        splitBar.setProgress(0);
+        roundDown.setChecked(false);
+        roundUp.setChecked(false);
+    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -690,6 +706,10 @@ public class TipActivity extends ActionBarActivity {
         if (id == R.id.action_settings) {
             Intent i = new Intent(this, SettingsActivity.class);
             startActivityForResult(i, 1);
+        }
+        else if (id == R.id.action_clear) {
+            clear();
+
         }
 
         return super.onOptionsItemSelected(item);

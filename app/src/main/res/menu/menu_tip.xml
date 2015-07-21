@@ -3,4 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools" tools:context=".TipActivity">
     <item android:id="@+id/action_settings" android:title="@string/action_settings"
         android:orderInCategory="100" app:showAsAction="never" />
+    <item android:id="@+id/action_clear" android:title="Clear"
+        android:orderInCategory="100" app:showAsAction="ifRoom" android:icon="@drawable/ic_clear_white_24dp"/>
 </menu>

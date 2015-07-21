@@ -10,6 +10,12 @@
         android:layout_height="120dp"
         android:background="@color/primary"
         />
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="4dp"
+        android:layout_below="@+id/header"
+        android:background="@color/md_indigo_500"
+        />
     <LinearLayout
         android:layout_below="@id/header"
         android:layout_width="match_parent"
@@ -46,64 +52,70 @@
         android:layout_marginLeft="16dp"
         android:layout_marginBottom="8dp"
         android:id="@+id/total_textView"/>
-    <LinearLayout
+    <HorizontalScrollView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:id="@+id/total_scroll_view"
         android:layout_below="@id/total_textView"
-        android:orientation="horizontal"
         android:layout_marginLeft="16dp"
-        android:gravity="center_vertical"
-        android:id="@+id/total_view">
-        <TextView
+        android:layout_marginRight="16dp"
+        android:scrollbars="none">
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/currency_total_left"
-            android:textSize="34sp"
-            android:textColor="@color/md_white_1000"
-            android:layout_marginRight="4dp"/>
-        <TextView
-            android:id="@+id/total_amount_textView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="34sp"
-            android:textColor="@color/md_white_1000"
-            android:text="0"/>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="4dp"
-            android:textSize="34sp"
-            android:textColor="@color/md_white_1000"
-            android:id="@+id/currency_total_right"/>
-    </LinearLayout>
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:id="@+id/total_view">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/currency_total_left"
+                    android:textSize="24sp"
+                    android:textColor="@color/md_white_1000"
+                    android:layout_marginRight="4dp"/>
+                <TextView
+                    android:id="@+id/total_amount_textView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="24sp"
+                    android:textColor="@color/md_white_1000"
+                    android:text="0"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="4dp"
+                    android:textSize="24sp"
+                    android:textColor="@color/md_white_1000"
+                    android:id="@+id/currency_total_right"/>
+        </LinearLayout>
+    </HorizontalScrollView>
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/total_view"
+        android:layout_below="@id/total_scroll_view"
         android:orientation="horizontal"
         android:layout_marginLeft="16dp"
         android:gravity="center_vertical"
         android:id="@+id/tax_view">
         <TextView
-            android:layout_marginLeft="8dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/currency_tip_left"
-            android:textSize="18sp"
+            android:textSize="16sp"
             android:textColor="@color/md_indigo_700"
             android:layout_marginRight="4dp"/>
         <TextView
             android:id="@+id/tip_amount_textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
+            android:textSize="16sp"
             android:textColor="@color/md_indigo_700"
             android:text="0"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="4dp"
-            android:textSize="18sp"
+            android:textSize="16sp"
             android:textColor="@color/md_indigo_700"
             android:id="@+id/currency_tip_right"/>
     </LinearLayout>
@@ -196,12 +208,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginBottom="16dp"
-                android:gravity="center_vertical">
+                android:gravity="center_vertical"
+                >
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:layout_marginRight="16dp">
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -217,7 +231,7 @@
                         android:background="@color/md_grey_100"
                         android:focusableInTouchMode="true"
                         android:maxLength="8"
-                        android:id="@+id/bill_editText"/>
+                        android:id="@+id/bill_editText" />
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -314,6 +328,10 @@
                     app:dsb_min="0"
                     app:dsb_max="30"
                     android:id="@+id/tip_spinner"
+                    app:dsb_indicatorColor="@color/md_indigo_500"
+                    app:dsb_progressColor="@color/md_indigo_500"
+                    app:dsb_rippleColor="@color/md_indigo_300"
+                    app:dsb_trackColor="@color/md_indigo_500"
                     />
                 <TextView
                     android:id="@+id/tip_textView"
@@ -371,6 +389,8 @@
                     android:layout_weight="1"
                     app:dsb_min="1"
                     app:dsb_max="10"
+                    app:dsb_trackColor="@color/md_teal_500"
+                    app:dsb_rippleColor="@color/md_teal_300"
                     />
                 <LinearLayout
                     android:orientation="vertical"
