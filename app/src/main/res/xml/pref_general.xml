@@ -11,10 +11,13 @@
             android:entryValues="@array/countries_array"/>
         <EditTextPreference
             android:key="@string/tax_pref"
-            android:title="Tax Percentage"/>
+            android:title="Tax Percentage"
+            android:inputType="numberDecimal"/>
         <ListPreference
             android:key="@string/tip_pref"
-            android:title="Tip Percentage"/>
+            android:title="Tip Percentage"
+            android:entries="@array/tip_array"
+            android:entryValues="@array/tip_array"/>
         <SwitchPreference
             android:key="tipping_pref"
             android:title="Tipping"

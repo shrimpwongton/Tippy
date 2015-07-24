@@ -53,12 +53,14 @@ public class TipActivity extends ActionBarActivity {
     DecimalFormat format = new DecimalFormat("##,##0.00");
     CheckBox roundUp, roundDown;
     View view1, view2, view3;
+    SharedPreferences sharedPrefs;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tip);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
-        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+        sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+        //clear();
 
 
         // Gets the address of the user, in order to set country
@@ -90,6 +92,9 @@ public class TipActivity extends ActionBarActivity {
         totalText = (TextView) findViewById(R.id.total_amount_textView);
         billText.setFilters(new InputFilter[] {new DecimalDigitsInputFilter(2)});
         taxText = (EditText) findViewById(R.id.tax_editText);
+        tipBar = (DiscreteSeekBar) findViewById(R.id.tip_spinner);
+        tipText = (TextView) findViewById(R.id.tip_textView);
+        splitBar = (DiscreteSeekBar) findViewById(R.id.split_bar);
         taxText.setFilters(new InputFilter[]{new DecimalDigitsInputFilter(3)});
         spinnerCountry.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -105,6 +110,7 @@ public class TipActivity extends ActionBarActivity {
                 setCurrencySymbol(spinnerCountry.getSelectedItem().toString());
             }
         });
+        clear();
         billText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -159,8 +165,6 @@ public class TipActivity extends ActionBarActivity {
             public void afterTextChanged(Editable s) {
             }
         });
-        tipBar = (DiscreteSeekBar) findViewById(R.id.tip_spinner);
-        tipText = (TextView) findViewById(R.id.tip_textView);
         tipBar.setOnProgressChangeListener(new DiscreteSeekBar.OnProgressChangeListener() {
             @Override
             public void onProgressChanged(DiscreteSeekBar discreteSeekBar, int i, boolean b) {
@@ -188,7 +192,6 @@ public class TipActivity extends ActionBarActivity {
             @Override
             public void onStopTrackingTouch(DiscreteSeekBar discreteSeekBar) {}
         });
-        splitBar = (DiscreteSeekBar) findViewById(R.id.split_bar);
         splitBar.setOnProgressChangeListener(new DiscreteSeekBar.OnProgressChangeListener() {
             @Override
             public void onProgressChanged(DiscreteSeekBar discreteSeekBar, int i, boolean b) {
@@ -288,13 +291,16 @@ public class TipActivity extends ActionBarActivity {
         return d;
     }
     private double roundTip(double d) {
-        if ( roundUp.isChecked() )
-            return d + Math.ceil(calculatedTotal)-calculatedTotal;
+        if ( roundUp.isChecked() ) {
+            return d + Math.round(Math.ceil(calculatedTotal) * 100.0) / 100.0 - Math.round(calculatedTotal*100.0)/100.0;
+            //Toast.makeText()
+        }
         else if ( roundDown.isChecked() ) {
             if (d - (calculatedTotal - Math.floor(calculatedTotal)) < 0)
                 return 0;
-            else
-                return (d - (calculatedTotal - Math.floor(calculatedTotal)));
+            else {
+                return (d - (Math.round(calculatedTotal*100.0)/100.0 - Math.round(Math.floor(calculatedTotal) * 100.0) / 100.0));
+            }
         }
         return d;
     }
@@ -683,7 +689,10 @@ public class TipActivity extends ActionBarActivity {
 
     private void clear() {
         billText.setText("");
-        taxText.setText("");
+        taxText.setText(sharedPrefs.getString("tax_preference", ""));
+        setCurrencySymbol(sharedPrefs.getString("country_preference", ""));
+        spinnerCountry.setSelection(getIndex(spinnerCountry, sharedPrefs.getString("country_preference", "")));
+        tipBar.setProgress(Integer.parseInt(sharedPrefs.getString("tip_preference", "")));
         splitBar.setProgress(0);
         roundDown.setChecked(false);
         roundUp.setChecked(false);
