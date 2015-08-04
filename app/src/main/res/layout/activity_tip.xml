@@ -326,7 +326,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="9"
                     app:dsb_min="0"
-                    app:dsb_max="30"
+                    app:dsb_max="50"
                     android:id="@+id/tip_spinner"
                     app:dsb_indicatorColor="@color/md_indigo_500"
                     app:dsb_progressColor="@color/md_indigo_500"

@@ -96,6 +96,7 @@ public class TipActivity extends ActionBarActivity {
         tipText = (TextView) findViewById(R.id.tip_textView);
         splitBar = (DiscreteSeekBar) findViewById(R.id.split_bar);
         taxText.setFilters(new InputFilter[]{new DecimalDigitsInputFilter(3)});
+        clear();
         spinnerCountry.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -106,11 +107,10 @@ public class TipActivity extends ActionBarActivity {
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                determineTip(spinnerCountry.getSelectedItem().toString());
-                setCurrencySymbol(spinnerCountry.getSelectedItem().toString());
+                //determineTip(spinnerCountry.getSelectedItem().toString());
+                //setCurrencySymbol(spinnerCountry.getSelectedItem().toString());
             }
         });
-        clear();
         billText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -692,7 +692,7 @@ public class TipActivity extends ActionBarActivity {
         taxText.setText(sharedPrefs.getString("tax_preference", ""));
         setCurrencySymbol(sharedPrefs.getString("country_preference", ""));
         spinnerCountry.setSelection(getIndex(spinnerCountry, sharedPrefs.getString("country_preference", "")));
-        tipBar.setProgress(Integer.parseInt(sharedPrefs.getString("tip_preference", "")));
+        setTip(Integer.parseInt(sharedPrefs.getString("tip_preference", "")));
         splitBar.setProgress(0);
         roundDown.setChecked(false);
         roundUp.setChecked(false);
