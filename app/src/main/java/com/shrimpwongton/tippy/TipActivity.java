@@ -96,7 +96,6 @@ public class TipActivity extends ActionBarActivity {
         tipText = (TextView) findViewById(R.id.tip_textView);
         splitBar = (DiscreteSeekBar) findViewById(R.id.split_bar);
         taxText.setFilters(new InputFilter[]{new DecimalDigitsInputFilter(3)});
-        clear();
         spinnerCountry.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -111,6 +110,7 @@ public class TipActivity extends ActionBarActivity {
                 //setCurrencySymbol(spinnerCountry.getSelectedItem().toString());
             }
         });
+        clear();
         billText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -406,6 +406,12 @@ public class TipActivity extends ActionBarActivity {
                 //totalText.setText(format.format(Double.parseDouble((totalText.getText().toString()).replace(",",""))));
                 //totalText.setText(format.format((double)((int) Math.floor(oldValue))));
             }
+            else
+            {
+                format = new DecimalFormat("##,###");
+                totalText.setText(format.format(0));
+                tipTextView.setText(format.format(0));
+            }
             billText.setInputType(InputType.TYPE_CLASS_NUMBER);
             billText.setHint("0");
         }
@@ -427,6 +433,8 @@ public class TipActivity extends ActionBarActivity {
         tipText.setText(Integer.toString(tip)+"%");
     }
     private void setCurrencySymbol (String country) {
+        roundUp.setEnabled(true);
+        roundDown.setEnabled(true);
         switch (country) {
             case "Brazil":
                 setLeftCurrency("R$");
@@ -444,6 +452,8 @@ public class TipActivity extends ActionBarActivity {
             case "Iceland":
                 setRightCurrency("kr");
                 changeKeyboard(0);
+                roundUp.setEnabled(false);
+                roundDown.setEnabled(false);
                 break;
             case "Denmark":
                 setRightCurrency("kr.");
@@ -500,10 +510,14 @@ public class TipActivity extends ActionBarActivity {
             case "Japan":
                 setLeftCurrency("¥");
                 changeKeyboard(0);
+                roundUp.setEnabled(false);
+                roundDown.setEnabled(false);
                 break;
             case "Malaysia":
                 setLeftCurrency("RM");
                 changeKeyboard(0);
+                roundUp.setEnabled(false);
+                roundDown.setEnabled(false);
                 break;
             case "Morocco":
                 setRightCurrency("د.م.");
@@ -540,6 +554,8 @@ public class TipActivity extends ActionBarActivity {
             case "South Korea":
                 setLeftCurrency("₩");
                 changeKeyboard(0);
+                roundUp.setEnabled(false);
+                roundDown.setEnabled(false);
                 break;
             case "Sri Lanka":
                 setLeftCurrency("Rs.");
@@ -560,6 +576,8 @@ public class TipActivity extends ActionBarActivity {
             case "Chile":
                 setLeftCurrency("$");
                 changeKeyboard(0);
+                roundUp.setEnabled(false);
+                roundDown.setEnabled(false);
                 break;
             default:
                 setLeftCurrency("$");
@@ -572,118 +590,123 @@ public class TipActivity extends ActionBarActivity {
         textRecommendation = (TextView) findViewById(R.id.recommendation_text);
         roundUp = (CheckBox) findViewById(R.id.round_up);
         roundDown = (CheckBox) findViewById(R.id.round_down);
-        switch (country) {
-            case "Argentina":
-            case "Bahrain":
-            case "Bolivia":
-            case "Bulgaria":
-            case "Colombia":
-            case "Indonesia":
-            case "Paraguay":
-            case "Philippines":
-            case "Poland":
-            case "Slovakia":
-                textRecommendation.setText("10%");
-                setTip(10);
-                break;
-            case "Australia":
-                textRecommendation.setText("10% in fine restaurants, no tip otherwise.");
-                setTip(0);
-                break;
-            case "Austria":
-                textRecommendation.setText("5% above service charge (Round up)");
-                setTip(5);
-                break;
-            case "Romania":
-            case "Switzerland":
-            case "Turkey":
-            case "Morocco":
-                textRecommendation.setText("Round up");
-                roundUp.setChecked(true);
-                roundDown.setEnabled(false);
-                setTip(0);
-                break;
-            case "Belgium":
-            case "Ecuador":
-            case "United Kingdom":
-            case "Finland":
-            case "Hungary":
-            case "Iceland":
-            case "India":
-            case "Norway":
-            case "Sweden":
-                textRecommendation.setText("10%, if no service charge added.");
-                setTip(10);
-                break;
-            case "Taiwan":
-            case "Singapore":
-                textRecommendation.setText("No tip required, but tips are appreciated.");
-                setTip(0);
-                break;
-            case "Brazil":
-            case "Ireland":
-            case "Mexico":
-            case "Russia":
-                textRecommendation.setText("10-15%");
-                setTip(10);
-                break;
-            case "Japan":
-            case "Denmark":
-            case "Fiji":
-            case "Malaysia":
-            case "New Zealand":
-            case "South Korea":
-            case "Thailand":
-            case "Slovenia":
-                textRecommendation.setText("No tip required.");
-                setTip(0);
-                break;
-            case "Israel":
-            case "Portugal":
-                textRecommendation.setText("10 - 15%, if no service charge added.");
-                setTip(10);
-                break;
-            case "China":
-                textRecommendation.setText("3% in major cities, otherwise no tip required.");
-                setTip(3);
-                break;
-            case "Cuba":
-                textRecommendation.setText("$1, if service was special.");
-                setTip(0);
-                break;
-            case "Czech Republic":
-            case "France":
-            case "Germany":
-            case "Netherlands":
-            case "Luxembourg":
-            case "Liechtenstein":
-                textRecommendation.setText("5 - 10%");
-                setTip(5);
-                break;
-            case "Chile":
-            case "Egypt":
-            case "Greece":
-            case "Hong Kong":
-            case "Macau":
-            case "Italy":
-            case "Spain":
-            case "Andorra":
-                textRecommendation.setText("10% in addition to service charge.");
-                setTip(10);
-                break;
-            case "Canada":
-                textRecommendation.setText("15%");
-                setTip(15);
-                break;
-            case "United States":
-            case "Puerto Rico":
-                textRecommendation.setText("15 - 20%");
-                setTip(15);
-                break;
-            default :
-                textRecommendation.setText("No recommendations on tipping.");
-                setTip(0);
-                break;
+        if (sharedPrefs.getBoolean("recommendation_pref", true)) {
+            switch (country) {
+                case "Argentina":
+                case "Bahrain":
+                case "Bolivia":
+                case "Bulgaria":
+                case "Colombia":
+                case "Indonesia":
+                case "Paraguay":
+                case "Philippines":
+                case "Poland":
+                case "Slovakia":
+                    textRecommendation.setText("10%");
+                    setTip(10);
+                    break;
+                case "Australia":
+                    textRecommendation.setText("10% in fine restaurants, no tip otherwise.");
+                    setTip(0);
+                    break;
+                case "Austria":
+                    textRecommendation.setText("5% above service charge (Round up)");
+                    setTip(5);
+                    break;
+                case "Romania":
+                case "Switzerland":
+                case "Turkey":
+                case "Morocco":
+                    textRecommendation.setText("Round up");
+                    roundUp.setChecked(true);
+                    roundDown.setEnabled(false);
+                    setTip(0);
+                    break;
+                case "Belgium":
+                case "Ecuador":
+                case "United Kingdom":
+                case "Finland":
+                case "Hungary":
+                case "Iceland":
+                case "India":
+                case "Norway":
+                case "Sweden":
+                    textRecommendation.setText("10%, if no service charge added.");
+                    setTip(10);
+                    break;
+                case "Taiwan":
+                case "Singapore":
+                    textRecommendation.setText("No tip required, but tips are appreciated.");
+                    setTip(0);
+                    break;
+                case "Brazil":
+                case "Ireland":
+                case "Mexico":
+                case "Russia":
+                    textRecommendation.setText("10-15%");
+                    setTip(10);
+                    break;
+                case "Japan":
+                case "Denmark":
+                case "Fiji":
+                case "Malaysia":
+                case "New Zealand":
+                case "South Korea":
+                case "Thailand":
+                case "Slovenia":
+                    textRecommendation.setText("No tip required.");
+                    setTip(0);
+                    break;
+                case "Israel":
+                case "Portugal":
+                    textRecommendation.setText("10 - 15%, if no service charge added.");
+                    setTip(10);
+                    break;
+                case "China":
+                    textRecommendation.setText("3% in major cities, otherwise no tip required.");
+                    setTip(3);
+                    break;
+                case "Cuba":
+                    textRecommendation.setText("$1, if service was special.");
+                    setTip(0);
+                    break;
+                case "Czech Republic":
+                case "France":
+                case "Germany":
+                case "Netherlands":
+                case "Luxembourg":
+                case "Liechtenstein":
+                    textRecommendation.setText("5 - 10%");
+                    setTip(5);
+                    break;
+                case "Chile":
+                case "Egypt":
+                case "Greece":
+                case "Hong Kong":
+                case "Macau":
+                case "Italy":
+                case "Spain":
+                case "Andorra":
+                    textRecommendation.setText("10% in addition to service charge.");
+                    setTip(10);
+                    break;
+                case "Canada":
+                    textRecommendation.setText("15%");
+                    setTip(15);
+                    break;
+                case "United States":
+                case "Puerto Rico":
+                    textRecommendation.setText("15 - 20%");
+                    setTip(15);
+                    break;
+                default:
+                    textRecommendation.setText("No recommendations on tipping.");
+                    setTip(0);
+                    break;
+            }
+        }
+        else {
+            textRecommendation.setText("");
         }
     }
 
@@ -692,6 +715,7 @@ public class TipActivity extends ActionBarActivity {
         taxText.setText(sharedPrefs.getString("tax_preference", ""));
         setCurrencySymbol(sharedPrefs.getString("country_preference", ""));
         spinnerCountry.setSelection(getIndex(spinnerCountry, sharedPrefs.getString("country_preference", "")));
+        //determineTip(spinnerCountry.getSelectedItem().toString());
         setTip(Integer.parseInt(sharedPrefs.getString("tip_preference", "")));
         splitBar.setProgress(0);
         roundDown.setChecked(false);
