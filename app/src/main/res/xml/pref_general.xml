@@ -15,7 +15,7 @@
             android:inputType="numberDecimal"/>
         <ListPreference
             android:key="@string/tip_pref"
-            android:title="Tip Percentage"
+            android:title="Tip Percentage (for Default Country)"
             android:entries="@array/tip_array"
             android:entryValues="@array/tip_array"/>
         <SwitchPreference
@@ -26,7 +26,7 @@
         <SwitchPreference
             android:key="recommendation_pref"
             android:title="Tip Recommendations"
-            android:summary="Show tip recommendations for selected country."
+            android:summary="Show and set tip recommendations for selected country."
             android:defaultValue="true"/>
     </PreferenceCategory>
     <PreferenceCategory

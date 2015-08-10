@@ -54,6 +54,7 @@ public class TipActivity extends ActionBarActivity {
     CheckBox roundUp, roundDown;
     View view1, view2, view3;
     SharedPreferences sharedPrefs;
+    boolean clearFlag = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -100,8 +101,11 @@ public class TipActivity extends ActionBarActivity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 determineTip(spinnerCountry.getSelectedItem().toString());
+                if (clearFlag && spinnerCountry.getSelectedItem().toString().equals(sharedPrefs.getString("country_preference", "")))
+                    setTip(Integer.parseInt(sharedPrefs.getString("tip_preference", "")));
                 setCurrencySymbol(spinnerCountry.getSelectedItem().toString());
                 roundTotals();
+                clearFlag = false;
             }
 
             @Override
@@ -110,7 +114,6 @@ public class TipActivity extends ActionBarActivity {
                 //setCurrencySymbol(spinnerCountry.getSelectedItem().toString());
             }
         });
-        clear();
         billText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -118,9 +121,16 @@ public class TipActivity extends ActionBarActivity {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (!(s.toString().matches("")) && !(TextUtils.isEmpty(taxText.getText()))) {
-                    calculatedTotal = ((Double.parseDouble(taxText.getText().toString()) + (double) tipBar.getProgress()) / 100.0 * Double.parseDouble(s.toString()) + Double.parseDouble(s.toString())) / (double) splitBar.getProgress();
-                    calculatedTip = ((double) tipBar.getProgress()) / 100.0 * Double.parseDouble(s.toString());
-                    roundTotals();
+                    if ( sharedPrefs.getBoolean("tipping_pref", true) ) {
+                        calculatedTotal = ((Double.parseDouble(taxText.getText().toString()))/100.0 * Double.parseDouble(s.toString()) + ((double) tipBar.getProgress()) / 100.0 * (Double.parseDouble(s.toString())+Double.parseDouble(s.toString())*(Double.parseDouble(taxText.getText().toString()))/100.0) + Double.parseDouble(s.toString())) / (double) splitBar.getProgress();
+                        calculatedTip = ((double) tipBar.getProgress()) / 100.0 * (Double.parseDouble(s.toString())+ Double.parseDouble(s.toString())*(Double.parseDouble(taxText.getText().toString()))/100.0);
+                        roundTotals();
+                    }
+                    else {
+                        calculatedTotal = ((Double.parseDouble(taxText.getText().toString()) + (double) tipBar.getProgress()) / 100.0 * Double.parseDouble(s.toString()) + Double.parseDouble(s.toString())) / (double) splitBar.getProgress();
+                        calculatedTip = ((double) tipBar.getProgress()) / 100.0 * Double.parseDouble(s.toString());
+                        roundTotals();
+                    }
                 } else if (!(s.toString().matches(""))) {
                     calculatedTotal = (Double.parseDouble(s.toString()) + (double) tipBar.getProgress() / 100.0 * Double.parseDouble(billText.getText().toString())) / (double) splitBar.getProgress();
                     calculatedTip = ((double) tipBar.getProgress()) / 100.0 * Double.parseDouble(s.toString());
@@ -145,9 +155,16 @@ public class TipActivity extends ActionBarActivity {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (!(TextUtils.isEmpty(billText.getText())) && !(s.toString().matches(""))) {
-                    calculatedTotal = ((Double.parseDouble(s.toString()) + (double) tipBar.getProgress()) / 100.0 * Double.parseDouble(billText.getText().toString()) + Double.parseDouble(billText.getText().toString())) / (double) splitBar.getProgress();
-                    calculatedTip = ((double) tipBar.getProgress()) / 100.0 * Double.parseDouble(billText.getText().toString());
-                    roundTotals();
+                    if ( sharedPrefs.getBoolean("tipping_pref", true) ) {
+                        calculatedTotal = ((Double.parseDouble(s.toString())/100.0 * Double.parseDouble(billText.getText().toString())) + ((double) tipBar.getProgress()) / 100.0 * (Double.parseDouble(billText.getText().toString()) + Double.parseDouble(s.toString())/100.0*Double.parseDouble(billText.getText().toString())) + Double.parseDouble(billText.getText().toString())) / (double) splitBar.getProgress();
+                        calculatedTip = ((double) tipBar.getProgress()) / 100.0 * (Double.parseDouble(billText.getText().toString()) + (Double.parseDouble(s.toString())/100.0)*Double.parseDouble(billText.getText().toString()));
+                        roundTotals();
+                    }
+                    else {
+                        calculatedTotal = ((Double.parseDouble(s.toString()) + (double) tipBar.getProgress()) / 100.0 * Double.parseDouble(billText.getText().toString()) + Double.parseDouble(billText.getText().toString())) / (double) splitBar.getProgress();
+                        calculatedTip = ((double) tipBar.getProgress()) / 100.0 * Double.parseDouble(billText.getText().toString());
+                        roundTotals();
+                    }
                 } else if (!(TextUtils.isEmpty(billText.getText()))) {
                     calculatedTotal = (Double.parseDouble(billText.getText().toString()) + (double) tipBar.getProgress() / 100.0 * Double.parseDouble(billText.getText().toString())) / (double) splitBar.getProgress();
                     calculatedTip = ((double) tipBar.getProgress()) / 100.0 * Double.parseDouble(billText.getText().toString());
@@ -170,9 +187,16 @@ public class TipActivity extends ActionBarActivity {
             public void onProgressChanged(DiscreteSeekBar discreteSeekBar, int i, boolean b) {
                 tipText.setText(Integer.toString(i) + "%");
                 if (!(TextUtils.isEmpty(billText.getText())) && !(TextUtils.isEmpty(taxText.getText()))) {
-                    calculatedTotal = ((Double.parseDouble(taxText.getText().toString())+(double)i) / 100.0 * Double.parseDouble(billText.getText().toString()) + Double.parseDouble(billText.getText().toString()))/(double)splitBar.getProgress();
-                    calculatedTip = ((double)i) / 100.0 * Double.parseDouble(billText.getText().toString());
-                    roundTotals();
+                    if ( sharedPrefs.getBoolean("tipping_pref", true) ) {
+                        calculatedTotal = ((Double.parseDouble(taxText.getText().toString())/100.0 * Double.parseDouble(billText.getText().toString())) + ((double) i) / 100.0 * (Double.parseDouble(billText.getText().toString()) + Double.parseDouble(taxText.getText().toString())/100.0*Double.parseDouble(billText.getText().toString())) + Double.parseDouble(billText.getText().toString())) / (double) splitBar.getProgress();
+                        calculatedTip = ((double) i) / 100.0 * (Double.parseDouble(billText.getText().toString()) + (Double.parseDouble(taxText.getText().toString())/100.0)*Double.parseDouble(billText.getText().toString()));
+                        roundTotals();
+                    }
+                    else {
+                        calculatedTotal = ((Double.parseDouble(taxText.getText().toString()) + (double) i) / 100.0 * Double.parseDouble(billText.getText().toString()) + Double.parseDouble(billText.getText().toString())) / (double) splitBar.getProgress();
+                        calculatedTip = ((double) i) / 100.0 * Double.parseDouble(billText.getText().toString());
+                        roundTotals();
+                    }
                 } else if (!(TextUtils.isEmpty(billText.getText()))) {
                     calculatedTotal = (Double.parseDouble(billText.getText().toString())+(double)i/100.0*Double.parseDouble(billText.getText().toString()))/(double)splitBar.getProgress();
                     calculatedTip = ((double)i) / 100.0 * Double.parseDouble(billText.getText().toString());
@@ -196,9 +220,16 @@ public class TipActivity extends ActionBarActivity {
             @Override
             public void onProgressChanged(DiscreteSeekBar discreteSeekBar, int i, boolean b) {
                 if (!(TextUtils.isEmpty(billText.getText())) && !(TextUtils.isEmpty(taxText.getText()))) {
-                    calculatedTotal = ((Double.parseDouble(taxText.getText().toString())+(double)tipBar.getProgress()) / 100.0 * Double.parseDouble(billText.getText().toString()) + Double.parseDouble(billText.getText().toString()))/(double)i;
-                    calculatedTip = (((double) tipBar.getProgress()) / 100.0 * Double.parseDouble(billText.getText().toString()));
-                    roundTotals();
+                    if ( sharedPrefs.getBoolean("tipping_pref", true) ) {
+                        calculatedTotal = ((Double.parseDouble(taxText.getText().toString())/100.0 * Double.parseDouble(billText.getText().toString())) + ((double) tipBar.getProgress()) / 100.0 * (Double.parseDouble(billText.getText().toString()) + Double.parseDouble(taxText.getText().toString())/100.0*Double.parseDouble(billText.getText().toString())) + Double.parseDouble(billText.getText().toString())) / (double) i;
+                        calculatedTip = ((double) tipBar.getProgress()) / 100.0 * (Double.parseDouble(billText.getText().toString()) + (Double.parseDouble(taxText.getText().toString())/100.0)*Double.parseDouble(billText.getText().toString()));
+                        roundTotals();
+                    }
+                    else {
+                        calculatedTotal = ((Double.parseDouble(taxText.getText().toString()) + (double) tipBar.getProgress()) / 100.0 * Double.parseDouble(billText.getText().toString()) + Double.parseDouble(billText.getText().toString())) / (double) i;
+                        calculatedTip = (((double) tipBar.getProgress()) / 100.0 * Double.parseDouble(billText.getText().toString()));
+                        roundTotals();
+                    }
                 } else if (!(TextUtils.isEmpty(billText.getText()))) {
                     calculatedTotal = (Double.parseDouble(billText.getText().toString())+(double)tipBar.getProgress()/100.0*Double.parseDouble(billText.getText().toString()))/(double)i;
                     calculatedTip = (((double) tipBar.getProgress()) / 100.0 * Double.parseDouble(billText.getText().toString()));
@@ -452,6 +483,8 @@ public class TipActivity extends ActionBarActivity {
             case "Iceland":
                 setRightCurrency("kr");
                 changeKeyboard(0);
+                roundUp.setChecked(false);
+                roundDown.setChecked(false);
                 roundUp.setEnabled(false);
                 roundDown.setEnabled(false);
                 break;
@@ -510,12 +543,16 @@ public class TipActivity extends ActionBarActivity {
             case "Japan":
                 setLeftCurrency("¥");
                 changeKeyboard(0);
+                roundUp.setChecked(false);
+                roundDown.setChecked(false);
                 roundUp.setEnabled(false);
                 roundDown.setEnabled(false);
                 break;
             case "Malaysia":
                 setLeftCurrency("RM");
                 changeKeyboard(0);
+                roundUp.setChecked(false);
+                roundDown.setChecked(false);
                 roundUp.setEnabled(false);
                 roundDown.setEnabled(false);
                 break;
@@ -554,6 +591,8 @@ public class TipActivity extends ActionBarActivity {
             case "South Korea":
                 setLeftCurrency("₩");
                 changeKeyboard(0);
+                roundUp.setChecked(false);
+                roundDown.setChecked(false);
                 roundUp.setEnabled(false);
                 roundDown.setEnabled(false);
                 break;
@@ -576,6 +615,8 @@ public class TipActivity extends ActionBarActivity {
             case "Chile":
                 setLeftCurrency("$");
                 changeKeyboard(0);
+                roundUp.setChecked(false);
+                roundDown.setChecked(false);
                 roundUp.setEnabled(false);
                 roundDown.setEnabled(false);
                 break;
@@ -715,8 +756,8 @@ public class TipActivity extends ActionBarActivity {
         taxText.setText(sharedPrefs.getString("tax_preference", ""));
         setCurrencySymbol(sharedPrefs.getString("country_preference", ""));
         spinnerCountry.setSelection(getIndex(spinnerCountry, sharedPrefs.getString("country_preference", "")));
-        //determineTip(spinnerCountry.getSelectedItem().toString());
         setTip(Integer.parseInt(sharedPrefs.getString("tip_preference", "")));
+        clearFlag = true;
         splitBar.setProgress(0);
         roundDown.setChecked(false);
         roundUp.setChecked(false);
@@ -742,7 +783,6 @@ public class TipActivity extends ActionBarActivity {
         }
         else if (id == R.id.action_clear) {
             clear();
-
         }
 
         return super.onOptionsItemSelected(item);
