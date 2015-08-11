@@ -295,7 +295,12 @@ public class TipActivity extends ActionBarActivity {
         double tipp = 0.0;
         if (!(TextUtils.isEmpty(billText.getText()))) {
             billp = Double.parseDouble(billText.getText().toString())/round(calculatedTotal);
-            tipp = (((double)tipBar.getProgress()*Double.parseDouble(billText.getText().toString())/100.0)+(round(calculatedTotal)-calculatedTotal))/round(calculatedTotal);
+            if ( sharedPrefs.getBoolean("tipping_pref", true) )  {
+                tipp = (((double) tipBar.getProgress() * (Double.parseDouble(billText.getText().toString())+Double.parseDouble(taxText.getText().toString())/100.0*Double.parseDouble(billText.getText().toString())) / 100.0) + (round(calculatedTotal) - calculatedTotal)) / round(calculatedTotal);
+            }
+            else {
+                tipp = (((double) tipBar.getProgress() * Double.parseDouble(billText.getText().toString()) / 100.0) + (round(calculatedTotal) - calculatedTotal)) / round(calculatedTotal);
+            }
         }
         if (!(TextUtils.isEmpty(taxText.getText())) && !(TextUtils.isEmpty(billText.getText()))) {
             taxp = (Double.parseDouble(taxText.getText().toString())*Double.parseDouble(billText.getText().toString())/100.0)/round(calculatedTotal);
@@ -762,6 +767,14 @@ public class TipActivity extends ActionBarActivity {
         roundDown.setChecked(false);
         roundUp.setChecked(false);
     }
+
+    /*private void update() {
+        taxText.setText(sharedPrefs.getString("tax_preference", ""));
+        setCurrencySymbol(sharedPrefs.getString("country_preference", ""));
+        spinnerCountry.setSelection(getIndex(spinnerCountry, sharedPrefs.getString("country_preference", "")));
+        setTip(Integer.parseInt(sharedPrefs.getString("tip_preference", "")));
+        clearFlag = true;
+    }*/
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.

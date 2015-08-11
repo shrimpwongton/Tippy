@@ -29,12 +29,4 @@
             android:summary="Show and set tip recommendations for selected country."
             android:defaultValue="true"/>
     </PreferenceCategory>
-    <PreferenceCategory
-        android:summary="Location"
-        android:title="Location" >
-        <SwitchPreference
-            android:key="location_pref"
-            android:title="Location"
-            android:summary="Use location to determine country for tip recommendations"/>
-    </PreferenceCategory>
 </PreferenceScreen>

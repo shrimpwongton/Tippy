@@ -2,6 +2,7 @@ package com.shrimpwongton.tippy;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
@@ -39,6 +40,26 @@ import java.util.List;
 public class SettingsActivity extends PreferenceActivity
         implements Preference.OnPreferenceChangeListener {
 
+
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
+                                          String key) {
+        if (key.equals("country_preference")) {
+            Preference countryPref = findPreference(key);
+            countryPref.setSummary(sharedPreferences.getString(key, ""));
+        }
+        else if (key.equals("tax_preference")) {
+            Preference taxPref = findPreference(key);
+            taxPref.setSummary(sharedPreferences.getString(key, ""));
+        }
+        else if (key.equals("tip_preference")) {
+            Preference tipPref = findPreference(key);
+            tipPref.setSummary(sharedPreferences.getString(key, ""));
+        }
+        else if (key.equals("recommendation_pref")) {
+            Preference recPref = findPreference(key);
+            recPref.setSummary(sharedPreferences.getString(key, ""));
+        }
+    }
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
