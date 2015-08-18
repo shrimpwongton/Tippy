@@ -770,8 +770,15 @@ public class TipActivity extends ActionBarActivity {
         roundUp.setChecked(false);
     }
 
-    private void ApplySettings() {
-
+    private void applySettings() {
+        taxText.setText(sharedPrefs.getString("tax_preference", ""));
+        setCurrencySymbol(sharedPrefs.getString("country_preference", ""));
+        spinnerCountry.setSelection(getIndex(spinnerCountry, sharedPrefs.getString("country_preference", "")));
+        setTip(Integer.parseInt(sharedPrefs.getString("tip_preference", "0")));
+        determineTip(spinnerCountry.getSelectedItem().toString());
+        splitBar.setProgress(0);
+        roundDown.setChecked(false);
+        roundUp.setChecked(false);
     }
 
     /*private void update() {
@@ -805,5 +812,17 @@ public class TipActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        switch (requestCode) {
+            case 1:
+                applySettings();
+                break;
+
+        }
+
     }
 }
