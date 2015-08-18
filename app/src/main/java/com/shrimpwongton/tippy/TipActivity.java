@@ -776,9 +776,6 @@ public class TipActivity extends ActionBarActivity {
         spinnerCountry.setSelection(getIndex(spinnerCountry, sharedPrefs.getString("country_preference", "")));
         setTip(Integer.parseInt(sharedPrefs.getString("tip_preference", "0")));
         determineTip(spinnerCountry.getSelectedItem().toString());
-        splitBar.setProgress(0);
-        roundDown.setChecked(false);
-        roundUp.setChecked(false);
     }
 
     /*private void update() {
