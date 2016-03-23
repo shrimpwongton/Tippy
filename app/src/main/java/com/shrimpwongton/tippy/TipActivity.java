@@ -1,8 +1,11 @@
 package com.shrimpwongton.tippy;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -363,7 +366,7 @@ public class TipActivity extends ActionBarActivity {
     }
 
     // Get the user's location, and sets the spinner to his/her location.
-    private void getAndSetLocation () {
+    /*private void getAndSetLocation () {
         spinnerCountry = (Spinner) findViewById(R.id.country_spinner);
         LocationManager lm = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
         Location location;
@@ -398,7 +401,7 @@ public class TipActivity extends ActionBarActivity {
         catch (IOException e) {
             e.printStackTrace();
         }
-    }
+    }*/
     private void setLeftCurrency(String currency) {
         leftTipCurrency = (TextView) findViewById(R.id.currency_tip_left);
         rightTipCurrency = (TextView) findViewById(R.id.currency_tip_right);
@@ -468,7 +471,7 @@ public class TipActivity extends ActionBarActivity {
         tipBar = (DiscreteSeekBar) findViewById(R.id.tip_spinner);
         tipText = (TextView) findViewById(R.id.tip_textView);
         tipBar.setProgress(tip);
-        tipText.setText(Integer.toString(tip)+"%");
+        tipText.setText(Integer.toString(tip) + "%");
     }
     private void setCurrencySymbol (String country) {
         roundUp.setEnabled(true);
@@ -804,8 +807,41 @@ public class TipActivity extends ActionBarActivity {
             Intent i = new Intent(this, SettingsActivity.class);
             startActivityForResult(i, 1);
         }
+        if ( id == R.id.action_about) {
+            //PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+            //String version = pInfo.versionName;
+            String versionName = BuildConfig.VERSION_NAME;
+            android.support.v7.app.AlertDialog.Builder dialog = new android.support.v7.app.AlertDialog.Builder(TipActivity.this);
+            dialog.setTitle("About");
+            dialog.setMessage("Version " + versionName +
+                    "\n© 2016 Anthony Wong"
+            );
+            dialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.cancel();
+                }
+            });
+            dialog.show();
+            return true;
+
+        }
         else if (id == R.id.action_clear) {
-            clear();
+            new AlertDialog.Builder(TipActivity.this)
+                    .setTitle("Clear Fields")
+                    .setMessage("Are you sure you want to clear all fields back to default?")
+                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            clear();
+                        }
+                    })
+                    .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    })
+                    .show();
         }
 
         return super.onOptionsItemSelected(item);
