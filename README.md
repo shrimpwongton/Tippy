@@ -17,3 +17,5 @@ Never again feel embarrassed about not knowing tipping customs for the countries
 ##Versions:
 - Version 1.0  
   - Initial release
+- Version 1.1
+  - Updated UI
